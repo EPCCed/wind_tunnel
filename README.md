@@ -1,0 +1,15 @@
+# Windtunnel simulation
+A toy model that solves the navier stokes equation for the flow around a wind.
+## Compiling
+
+You will need a fortran compiler and a Makefile installed. You will also need the mpi library. In most cases , it should be enough to run 
+```
+make
+```
+in a shell. You may need to setup the `FC` variable in the Makefile to the name of the mpi fortran compiler wrapper of your choice.
+
+## Running 
+An example input file is present in the file `config.txt`. 
+The main variables are the parameters `alpha`, the angle of attack, `m` the camber and  `t`, the thickness in the section `&SHAPEPARAMS` .
+Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ).
+
