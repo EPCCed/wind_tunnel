@@ -8,7 +8,7 @@ module parallel
 
     implicit none
 
-    integer :: threads=2 !number of openMP threads per MPI process
+    integer :: threads=1 !number of openMP threads per MPI process
 
     integer :: isize, irank !size and rank
 
@@ -103,7 +103,7 @@ module parallel
 
         implicit none
         real :: array(0:nx+1,0:ny+1)
-
+        
         !send top, recieve bottom
         call MPI_Sendrecv(array(:,ny),nx+2,MPI_REAL,up,1,array(:,0),nx+2,MPI_REAL,down,1,comm,status,ierr)
 
@@ -111,6 +111,10 @@ module parallel
         call MPI_Sendrecv(array(:,1),nx+2,MPI_REAL,down,0,array(:,ny+1),nx+2,MPI_REAL,up,0,comm,status,ierr)
 
     end subroutine
+
+    
+    
+    
 
 
 end module

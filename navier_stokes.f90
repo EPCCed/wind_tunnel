@@ -1,4 +1,4 @@
-subroutine navier_stokes()
+subroutine navier_stokes_cpu()
 !updates the vorticity according to the vorticity transport equation:
 !
 ! dw/dt + u dw/dx + v dw/dy = nabla^2 w
@@ -6,8 +6,7 @@ subroutine navier_stokes()
 ! The maximum velocity (that the vorticity is advected by) is capped to 1
 !
 !Also the maximum vorticity is capped at maxvort
-
-
+    
     use vars
     use parallel
 
@@ -16,16 +15,10 @@ subroutine navier_stokes()
     integer :: i, j
     real :: uu, vv, v2
     real :: r
-    real :: vmax
 
     real :: deltax, deltay
     real :: dwdx, dwdy
-
-
-    vmax=1.
-    vmax=vmax*vmax
-
-
+    
 
     !$OMP DO PRIVATE(uu,vv,v2,r,i, deltax, deltay, dwdx, dwdy)
     do j=1,ny
@@ -92,5 +85,17 @@ subroutine navier_stokes()
     call haloswap(vort)
     !$OMP END SINGLE
 
+
+end subroutine
+
+
+subroutine navier_stokes()
+    use vars
+
+    if ( device == .true. ) then 
+        call navier_stokes_gpu()
+    else 
+        call navier_stokes_cpu()
+    endif
 
 end subroutine

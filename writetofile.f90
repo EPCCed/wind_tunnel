@@ -24,6 +24,8 @@ subroutine writetofile(fname)
     !update velocities
     call getv()
 
+    call fieldsFromGpuToCpu()
+    
     !populate global array
     call collate_data()
 

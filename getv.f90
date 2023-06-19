@@ -1,4 +1,4 @@
-subroutine getv()
+subroutine getv_cpu()
 ! calculates the velocities in the grid by u = d(psi)/dy, v=-d(psi)/dx
 
     use vars
@@ -7,7 +7,6 @@ subroutine getv()
     implicit none
 
     integer :: i, j
-
 
     !calculate velocities
     !$OMP DO PRIVATE(j,i)
@@ -25,7 +24,6 @@ subroutine getv()
     if (up .eq. MPI_PROC_NULL) u(:,ny)=u(:,ny-1)
     !$OMP END SINGLE
 
-
     !$OMP DO PRIVATE(j)
     do j=1,ny
         !apply side
@@ -38,6 +36,18 @@ subroutine getv()
     enddo
     !$OMP END DO
 
-
-
 end subroutine
+
+
+subroutine getv()
+    use vars
+    integer :: n
+    
+    if (device == .true. ) then 
+        call getv_gpu()
+    else 
+        call getv_cpu()
+    endif
+    
+end subroutine
+

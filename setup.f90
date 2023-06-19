@@ -150,7 +150,20 @@ subroutine setup()
     psi(0,:) = psi(1,:)
     psi(nx+1,:) = 2.*psi(nx,:) - psi(nx-1,:)
     
-    
+    call set_up_vorticity()
 
+end subroutine
+
+subroutine set_up_vorticity()
+    use vars
+    implicit none 
+    
+    if (vorticity) then 
+        cfl_r0 = 0.25*dx*dy*R0
+        cfl_v = 0.25*dx/1. !assume velocty is 1
+
+        !dt is set according to the most restrictive CFL condition
+        dt = minval((/ cfl_r0, cfl_v /))
+    endif
 
 end subroutine

@@ -1,4 +1,4 @@
-subroutine poisson(n)
+subroutine poisson_cpu(n)
 ! solves the poisson equation nabla^2 psi = -vort using the Jacobi method with successive over-relaxation (SOR)
 
 !Jacobi method: psi(i,j,n+1) = 1/4( psi(i-1,j,n) + psi(i+1,j,n) + psi(i,j-1,n) + psi(i,j+1,n) + vort(i,j) )
@@ -18,8 +18,6 @@ subroutine poisson(n)
     real :: w !successive over-relaxation parameter
 
     w=1./(1+pi/nx_global) !optimal value of w
-
-
 
     do it=1,n
         !! old Jacobi method
@@ -51,17 +49,20 @@ subroutine poisson(n)
                              + (psi(i,j-1)+psi(i,j+1))*dx*dx +dx*dx*dy*dy*vort(i,j) ) &
                              /2./(dx*dx+dy*dy)
                     endif
+                
                 endif
+
+            
             enddo
         enddo
         !$OMP END DO
 
-         !$OMP SINGLE
-         call haloswap(psi)
-         !$OMP END SINGLE
-         !$OMP BARRIER
+          !$OMP SINGLE
+          call haloswap(psi)
+          !$OMP END SINGLE
+          !$OMP BARRIER
 
-        !update odd squares
+        ! update odd squares
         !$OMP DO PRIVATE(i,j)
         do j=1,ny
             do i=1,nx
@@ -83,15 +84,30 @@ subroutine poisson(n)
         enddo
         !$OMP END DO
 
-        !$OMP SINGLE
-        call haloswap(psi)
-        !apply top/bottom boundary conditions
-        if (down .eq. MPI_PROC_NULL) psi(:,0) = 2*psi(:,1) - psi(:,2)
-        if (up .eq. MPI_PROC_NULL) psi(:,ny+1) = 2*psi(:,ny) - psi(:,ny-1)
-        !$OMP END SINGLE
-        !$OMP BARRIER
 
-    enddo
+         !$OMP SINGLE
+         call haloswap(psi)
+         !apply top/bottom boundary conditions
+         if (down .eq. MPI_PROC_NULL) psi(:,0) = 2*psi(:,1) - psi(:,2)
+         if (up .eq. MPI_PROC_NULL) psi(:,ny+1) = 2*psi(:,ny) - psi(:,ny-1)
+         !$OMP END SINGLE
+         !$OMP BARRIER
+
+     enddo
 
 
 end subroutine
+
+
+subroutine poisson(n)
+    use vars
+    use poisson_solver_cuda_mod
+    integer :: n 
+
+    if (device == .true. ) then 
+        call poisson_gpu(n)
+    else 
+        call poisson_cpu(n)
+    endif
+end subroutine
+
