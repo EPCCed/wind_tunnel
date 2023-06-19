@@ -24,3 +24,7 @@ The output files contain a binary dump of arrays containing grid and field infor
 Also several information is printed out in the standard output, including drag and lift.
 
 ![Velocity](visualize/velocity.png)
+
+## Wind shape
+The shape of the wing is a cambered 4-digit NACA airfoil [https://en.wikipedia.org/wiki/NACA_airfoil ](https://en.wikipedia.org/wiki/NACA_airfoil) . An implementation is found in the `areofoil` routine at `vars.f90:159`.
+
