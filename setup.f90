@@ -12,6 +12,19 @@ subroutine setup()
     real :: ysum, yhat
     integer :: nums
     
+    ! report if running on CPU or on GPU
+    if (irank .eq. 0) then
+
+        if (device == .true.) then
+            print *, "Using the GPU device"
+        else
+            print *, "Using the CPU device"
+        endif 
+    
+    endif 
+
+
+
     !main process sets up global arrays
     if (irank .eq. 0) then  
     

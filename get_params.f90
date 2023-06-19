@@ -36,6 +36,13 @@ subroutine get_params()
                 print*, "WARNING: No vorticity parameters defined. Using defaults"
             endif
 
+            read(10,nml=gpuparams,IOSTAT=io)
+            if (io .eq. 0) then
+                print*, "Read in GPU parameters"
+            else
+                print*, "WARNING: No GPU parameters defined. Using defaults"
+            endif
+
         else
             print*, "WARNING: No parameter file found. Using default parameters."
         endif
@@ -46,6 +53,8 @@ subroutine get_params()
     call MPI_Bcast(maxvort,1,MPI_REAL,0,comm,ierr)
     call MPI_Bcast(r0,1,MPI_REAL,0,comm,ierr)
     call MPI_Bcast(vortcoeff,1,MPI_REAL,0,comm,ierr)
+    call MPI_Bcast(device,1,MPI_LOGICAL,0,comm,ierr)
+    
 
 
     !  call MPI_Finalize(ierr)

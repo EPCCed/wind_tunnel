@@ -79,10 +79,15 @@ implicit none
     real :: t=0.2 !thickness (fraction of length)
     real :: p=0.4 !location of maximum camber (fraction of length along chord)
 
+    ! gpu parameters
+    logical :: device = .false.
+
     !define namelists for reading in config files
     NAMELIST /vortparams/ vorticity,maxvort,r0,vortcoeff
     NAMELIST /mediumparams/  p0,rho,airspeed
     NAMELIST /shapeparams/ shape, alpha, a, b, c, m, t, p
+    NAMELIST /gpuparams/ device
+
 
 
 
@@ -103,7 +108,6 @@ implicit none
     integer, allocatable, dimension(:,:) :: mask, boundary
 
 
-    logical :: device = .false.
     
 
     contains
