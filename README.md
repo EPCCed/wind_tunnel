@@ -10,7 +10,7 @@ FC=mpif90 cmake ../
 in a shell.
 If building with GPU support then you should define the USE_CUDA variable 
 ```bash
-FC=mpif90 cmake ../ _DUSE_CUDA=ON
+FC=mpif90 cmake ../ -DUSE_CUDA=ON
 ```
 You may need to setup the `FC` variable in the Makefile to the name of the mpi fortran compiler wrapper of your choice.
 
