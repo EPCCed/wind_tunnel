@@ -92,10 +92,13 @@ end subroutine
 subroutine navier_stokes()
     use vars
 
-    if ( device == .true. ) then 
+#ifdef USE_CUDA
+    if ( device .eqv. .true. ) then 
         call navier_stokes_gpu()
     else 
         call navier_stokes_cpu()
     endif
-
+#else
+    call navier_stokes_cpu()
+#endif
 end subroutine

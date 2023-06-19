@@ -15,7 +15,7 @@ subroutine setup()
     ! report if running on CPU or on GPU
     if (irank .eq. 0) then
 
-        if (device == .true.) then
+        if (device .eqv. .true.) then
             print *, "Using the GPU device"
         else
             print *, "Using the CPU device"

@@ -23,9 +23,9 @@ subroutine writetofile(fname)
 
     !update velocities
     call getv()
-
+#ifdef USE_CUDA
     call fieldsFromGpuToCpu()
-    
+#endif
     !populate global array
     call collate_data()
 

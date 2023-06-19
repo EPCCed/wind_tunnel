@@ -10,14 +10,15 @@ subroutine solver()
 
     use vars
     use parallel
+#ifdef USE_CUDA
     use cuda_kernels
     use cudafor
+#endif
 
     implicit none
 
     real :: time
-    double precision :: tstart, tstop
-    integer :: it
+    double precision :: tstart=0, tstop=0
 
     !$OMP PARALLEL
     !solve Laplace's equation for the irrotational flow profile (vorticity=0)
@@ -29,9 +30,12 @@ subroutine solver()
     !get the vorticity on the surface of the object
     ! ierr=cudaDeviceSynchronize()
     call getvort_cpu()
+
+#ifdef USE_CUDA
     if (device == .true.) vort_dev=vort
 
     call fieldsFromGpuToCpu()
+#endif
     call getv_cpu()
 
     ! !write out the potential flow to file.
@@ -84,9 +88,11 @@ subroutine solver()
              print*,''
          endif
 
-    
+#ifdef USE_CUDA
     call fieldsFromGpuToCpu()
     ierr=cudaDeviceSynchronize()
+#endif
+
     call getv_cpu()
     call getvort_cpu()
 

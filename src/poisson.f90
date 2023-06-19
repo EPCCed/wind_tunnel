@@ -101,13 +101,20 @@ end subroutine
 
 subroutine poisson(n)
     use vars
+#ifdef USE_CUDA
     use poisson_solver_cuda_mod
+#endif
     integer :: n 
 
+#ifdef USE_CUDA
     if (device == .true. ) then 
         call poisson_gpu(n)
     else 
         call poisson_cpu(n)
     endif
+#else
+    call poisson_cpu(n)
+#endif
+
 end subroutine
 

@@ -36,12 +36,19 @@ subroutine get_params()
                 print*, "WARNING: No vorticity parameters defined. Using defaults"
             endif
 
+
             read(10,nml=gpuparams,IOSTAT=io)
+#ifdef USE_CUDA
             if (io .eq. 0) then
                 print*, "Read in GPU parameters"
             else
                 print*, "WARNING: No GPU parameters defined. Using defaults"
             endif
+#else
+            if (io .ne. 0) then
+                print*, "WARNING: GPU support is not enabled. GPU parameters will be ignored."
+            endif
+#endif
 
         else
             print*, "WARNING: No parameter file found. Using default parameters."

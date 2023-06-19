@@ -5,7 +5,6 @@ subroutine getvort_cpu()
 !The vorticity is taken to be a constant on the surface:
 ! vortcoeff on the top edge, and -vortcoeff on the bottom edge
     use vars
-    use cuda_kernels
     use parallel
 
     implicit none

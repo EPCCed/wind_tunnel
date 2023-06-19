@@ -3,7 +3,10 @@ program windtunnel
 
     use vars
     use parallel
+
+#ifdef USE_CUDA
     use cuda_kernels
+#endif
     implicit none
 
     call setup_MPI()
@@ -14,7 +17,9 @@ program windtunnel
 
 
     call setup()
+#ifdef USE_CUDA
     call setup_gpu()
+#endif
 
     call solver()
 

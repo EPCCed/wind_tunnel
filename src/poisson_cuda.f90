@@ -11,7 +11,6 @@ module cuda_kernels
 
     real, allocatable, dimension(:,:), device :: psi_dev, vort_dev, u_dev, v_dev, mask_dev
 
-
     contains
 
 

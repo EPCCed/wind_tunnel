@@ -41,13 +41,15 @@ end subroutine
 
 subroutine getv()
     use vars
-    integer :: n
-    
-    if (device == .true. ) then 
+#ifdef USE_CUDA
+    if (device .eqv. .true. ) then 
         call getv_gpu()
     else 
         call getv_cpu()
     endif
-    
+#else
+    call getv_cpu()
+#endif
+
 end subroutine
 
