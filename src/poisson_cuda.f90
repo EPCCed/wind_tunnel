@@ -120,13 +120,16 @@ module cuda_kernels
       implicit none
       integer :: i , j
 
+
       i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x 
       j = (blockIdx%y - 1) * blockDim%y + threadIdx%y
+
+      if (i == 0 ) print *, "i", i
+      if ((i .gt. nx_dev) .or. (j .gt. ny_dev)) return 
 
       vort_dev(i,j)=vort_dev(i,j) + dw_dev(i,j)*dt_dev  
       if ( vort_dev(i,j) .gt. maxvort_dev) vort_dev(i,j) = maxvort_dev
       if  (vort_dev(i,j) .lt. -maxvort_dev ) vort_dev(i,j) = -maxvort_dev
-        
 
       end subroutine
 
