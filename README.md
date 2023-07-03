@@ -1,6 +1,11 @@
 # Windtunnel simulation
 A toy model that solves the navier stokes equation for the flow around a wind.
 ## Compiling
+These instructions were tested on cirrus with
+- cmake/3.25.2
+- nvhpc/22.2
+The nvhpc suite provides the fortran openmpi cuda aware implementation.
+
 You will need a fortran compiler and CMake installed. You will also need a MPI library. If building with cuda support, the mpi library needs to be cuda aware. In most cases , it should be enough to run 
 ```bash
 mkdir build
