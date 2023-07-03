@@ -8,27 +8,28 @@ program tests
     integer :: rank
     real :: tmp
 
-    device = .true.
 
     call setup_MPI()
 
     call get_params()
 
+    device = .true.
+
     call setup()
 
     call setup_gpu()
 
-    call solver()
+    !call solver()
 
     !call writetofile('output.dat')
 
     !call getv_cpu()
 
-    call MPI_Comm_rank ( MPI_COMM_WORLD, rank, ierr )
+    !call MPI_Comm_rank ( MPI_COMM_WORLD, rank, ierr )
 
-    call MPI_Barrier(MPI_COMM_WORLD,ierr)
-    if (rank == 0) print *,"sum_vort", sum( abs(vort) )
-    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+    !call MPI_Barrier(MPI_COMM_WORLD,ierr)
+    !if (rank == 0) print *,"sum_vort", sum( abs(vort) )
+    !call MPI_Barrier(MPI_COMM_WORLD,ierr)
     !if (rank == 1) print "(A,' ',F10.7)","sum_vort", sum( v) 
 
     ! if (device == .true.) psi=psi_dev
@@ -48,8 +49,10 @@ program tests
 
     !call check_velocity()
 
+    !call mpi_finalize(ierr)
 
-    call mpi_finalize(ierr)
+    call check_vorticity_evolution()
+
 
 contains
 
@@ -122,10 +125,7 @@ contains
 
 
             call navier_stokes_cpu( )
-            
 
-
-              
             
             call navier_stokes_gpu()
 
@@ -241,6 +241,104 @@ contains
 
 
     end subroutine  
+
+
+
+
+subroutine check_vorticity_evolution()
+!determines the flow profile around the object. In order to do this we have to solve 2
+!coupled equations:
+! - calculate the streamfunction (psi) by solving Poisson's equation
+! - update the vorticity by solving the vorticity transport equation (from the NS equations)
+!
+!First of all a potential flow is calculated around the object (solving Laplace's equation)
+!then (optionally) the vorticity is turned on and alternately Poisson's equation and the
+!vorticity transport equation are iterated to determine the fluid flow.
+
+    use vars
+    use parallel
+    use cuda_kernels
+    use cudafor
+
+    implicit none
+
+    real :: time
+    double precision :: tstart=0, tstop=0,sum_psi_cpu=0
+    integer:: i
+    real, dimension( :, :) , allocatable :: psi_backup
+    real , dimension(0:nx+1,0:ny+1) :: vort_backup
+    real , dimension(1:nx,1:ny) :: u_backup
+    real , dimension(1:nx,1:ny) :: v_backup
+
+
+
+
+    allocate( psi_backup(0:nx+1,0:ny+1) )
+
+    !$OMP PARALLEL
+    !solve Laplace's equation for the irrotational flow profile (vorticity=0)
+    call poisson_cpu(5000)
+    !$OMP END PARALLEL
+
+
+
+    !get the vorticity on the surface of the object
+    ! ierr=cudaDeviceSynchronize()
+    call getvort_cpu()
+
+
+
+    time=0.
+    u=0.
+    v=0.
+
+    psi_dev=psi
+    vort_dev=vort
+    v_dev=v 
+    u_dev=u
+    dw=0
+    dw_dev=dw
+    
+    do i = 1, 200
+              !if (irank .eq. 0) print*, "t=",time,"of",nx*crossing_times
+        
+
+            call getv_cpu() !get the velocity
+    ! !         ierr=cudaDeviceSynchronize()
+
+            call navier_stokes_cpu() !solve dw/dt=f(w,psi) for a timestep
+    ! !         ierr=cudaDeviceSynchronize()
+
+            call poisson_cpu(2) !2 poisson 'relaxation' steps
+    ! !         ierr=cudaDeviceSynchronize()
+
+            call getv_gpu()
+            call navier_stokes_gpu()
+            call poisson_gpu(2) 
+   
+
+            sum_psi_cpu=sum(psi(1:nx,1:ny))
+            psi_backup=psi_dev
+            vort_backup=vort_dev
+            v_backup=v_dev 
+            u_backup=u_dev 
+
+            print * ,(sum_psi_cpu - sum(psi_backup(1:nx,1:ny) ) )
+            print * ,"vort",sum( abs(vort(1:nx,1:ny) ) - abs(vort_backup(1:nx,1:ny) ) )
+            print * ,sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ) 
+            print * ,sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) )) 
+
+            print * ,sum( v_backup(1:nx,1:ny) ) - sum(v(1:nx,1:ny))
+
+
+              
+
+              time=time+dt
+    enddo
+
+
+
+end subroutine
 
     
 

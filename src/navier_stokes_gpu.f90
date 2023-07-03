@@ -11,10 +11,16 @@ subroutine navier_stokes_gpu()
     nThreads = dim3(16,16,1)
     nBlocks = dim3(int( nx/(nThreads%x ) )+1, int(ny/(nThreads%y))+1   , 1)
 
-    call navier_stokes_kernel<<<nBlocks,nThreads>>>()
+
+    call navier_stokes_dw_kernel<<<nBlocks,nThreads>>>()
 
     !print *, cudaGetErrorString(cudaGetLastError())
-    
+
+    call navier_stokes_vorticity_kernel<<<nBlocks,nThreads>>>()
+
+    !print *, cudaGetErrorString(cudaGetLastError())
+
+
     call haloswap_device(vort_dev)
 
 

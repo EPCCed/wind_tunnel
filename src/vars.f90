@@ -117,6 +117,7 @@ implicit none
         allocate(psi(0:nx+1,0:ny+1), vort(0:nx+1,0:ny+1), v(nx,ny), u(nx,ny))
         allocate(psidum(0:nx+1,0:ny+1), dw(0:nx+1,0:ny+1))
         allocate(mask(nx,ny), boundary(nx,ny))
+        
 
     end subroutine
 

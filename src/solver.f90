@@ -30,7 +30,7 @@ subroutine solver()
     !get the vorticity on the surface of the object
     ! ierr=cudaDeviceSynchronize()
     call getvort_cpu()
-
+    
 #ifdef USE_CUDA
     if (device == .true.) vort_dev=vort
 

@@ -19,21 +19,21 @@ subroutine getv_gpu()
     call getv_gpu_kernel<<<grid_bulk,block_bulk>>>()
     ierr=cudaDeviceSynchronize()
 
-    !print *, cudaGetErrorString(cudaGetLastError())
+    print *, cudaGetErrorString(cudaGetLastError())
     block_h = dim3(32,1,1)
     grid_h = dim3(int( nx/(block_h%x ) )+1, 1   , 1)
     
     call v_horizontal_bc_gpu<<<grid_h,block_h>>>()
     ierr=cudaDeviceSynchronize()
 
-    !print *, cudaGetErrorString(cudaGetLastError())
+    print *, cudaGetErrorString(cudaGetLastError())
 
     block_v = dim3(32,1,1)
     grid_v = dim3(int( ny/(block_v%x ) )+1, 1   , 1)
     call v_vertical_bc_gpu<<<grid_v,block_v>>>()
     ierr=cudaDeviceSynchronize()
 
-    !print *, cudaGetErrorString(cudaGetLastError())
+    print *, cudaGetErrorString(cudaGetLastError())
 
     call maskv_gpu<<<grid_bulk,block_bulk>>>()
     ierr=cudaDeviceSynchronize()

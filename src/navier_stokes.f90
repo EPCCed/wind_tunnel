@@ -6,7 +6,7 @@ subroutine navier_stokes_cpu()
 ! The maximum velocity (that the vorticity is advected by) is capped to 1
 !
 !Also the maximum vorticity is capped at maxvort
-    
+
     use vars
     use parallel
 
@@ -18,7 +18,6 @@ subroutine navier_stokes_cpu()
 
     real :: deltax, deltay
     real :: dwdx, dwdy
-    
 
     !$OMP DO PRIVATE(uu,vv,v2,r,i, deltax, deltay, dwdx, dwdy)
     do j=1,ny
@@ -49,14 +48,11 @@ subroutine navier_stokes_cpu()
                 dw(i,j) = 0.5*(-uu*dwdx - vv*dwdy)
 
 
-    !             dw(i,j) = -uu*(vort(i+1,j)-vort(i-1,j))/2./dx - vv*(vort(i,j+1)-vort(i,j-1))/2./dy
-
-                !diffusion
-
                 r=r0
 
                 dw(i,j)= dw(i,j) + 1./r *( (vort(i+1,j) - 2.*vort(i,j) + vort(i-1,j) )/dx/dx &
                     + (vort(i,j+1) - 2.*vort(i,j) + vort(i,j-1))/dy/dy )
+                
 
             endif
         enddo
@@ -65,19 +61,19 @@ subroutine navier_stokes_cpu()
     !$OMP END DO
 
     !$OMP DO PRIVATE(j)
-    do j=1,ny
-        vort(:,j)=vort(:,j) + dw(:,j)*dt
-    enddo
+     do j=1,ny
+          vort(:,j)=vort(:,j) + dw(:,j)*dt
+      enddo
     !$OMP END DO
 
     !limit maximum vorticity
     !$OMP DO PRIVATE(i,j)
     do j=1,ny
-        do i=1,nx
-            if (vort(i,j) .gt. maxvort) vort(i,j) = maxvort
-            if (vort(i,j) .lt. -maxvort) vort(i,j) = -maxvort
-        enddo
-    enddo
+         do i=1,nx
+             if (vort(i,j) .gt. maxvort) vort(i,j) = maxvort
+             if (vort(i,j) .lt. -maxvort) vort(i,j) = -maxvort
+         enddo
+     enddo
     !$OMP END DO
 
 
@@ -87,7 +83,6 @@ subroutine navier_stokes_cpu()
 
 
 end subroutine
-
 
 subroutine navier_stokes()
     use vars

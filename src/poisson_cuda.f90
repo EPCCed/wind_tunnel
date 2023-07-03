@@ -8,21 +8,22 @@ module cuda_kernels
 
     real, device :: dt_dev, maxvort_dev,vmax_dev , r0_dev
 
-
-    real, allocatable, dimension(:,:), device :: psi_dev, vort_dev, u_dev, v_dev, mask_dev
+    real, allocatable, dimension(:,:), device :: psi_dev, vort_dev, u_dev, v_dev, mask_dev, dw_dev
 
     contains
 
 
     attributes(global) subroutine getv_gpu_kernel()
       integer i , j
-      i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x
-      j = (blockIdx%y - 1) * blockDim%y + threadIdx%y    
+      i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x 
+      j = (blockIdx%y - 1) * blockDim%y + threadIdx%y
 
-      if ( i  .gt. nx_dev .or. j .gt. ny_dev) return 
+  
+
+      if ( (i  .gt. nx_dev) .or. (j .gt. ny_dev)) return
 
       if (j .gt. 1 .or. j .lt. ny_dev) u_dev(i,j) = (psi_dev(i,j+1)-psi_dev(i,j-1))/2./dy_dev
-
+      
       if (i .gt. 1 .or. i .lt. nx_dev) v_dev(i,j) = -(psi_dev(i+1,j)-psi_dev(i-1,j))/2./dx_dev
 
 
@@ -64,18 +65,16 @@ module cuda_kernels
 
     end subroutine
 
-    attributes(global) subroutine navier_stokes_kernel()
+    attributes(global) subroutine navier_stokes_dw_kernel()
     implicit none  
     integer :: i , j
-    real :: uu,vv,v2,dw,dwdx,deltay,dwdy,deltax,r
+    real :: uu,vv,v2,dw=0,dwdx,deltay,dwdy,deltax,r
 
 
-    i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x
+    i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x 
     j = (blockIdx%y - 1) * blockDim%y + threadIdx%y
 
     if ((i .gt. nx_dev) .or. (j .gt. ny_dev)) return 
-
-    
     if (mask_dev(i,j) .eq. 0) then
       !advection
       
@@ -103,16 +102,35 @@ module cuda_kernels
 
       dw= dw + 1./r *( (vort_dev(i+1,j) - 2.*vort_dev(i,j) + vort_dev(i-1,j) )/dx_dev/dx_dev &
           + (vort_dev(i,j+1) - 2.*vort_dev(i,j) + vort_dev(i,j-1))/dy_dev/dy_dev )
-      endif
+      !endif
 
-      vort_dev(i,j)=vort_dev(i,j) + dw*dt_dev
+      dw_dev(i,j)=dw
 
-      if ( vort_dev(i,j) .gt. maxvort_dev) vort_dev(i,j) = maxvort_dev
-      if  (vort_dev(i,j) .lt. -maxvort_dev ) vort_dev(i,j) = -maxvort_dev
-    
+      !vort_dev(i,j)=vort_dev(i,j) + dw*dt_dev
+
+    endif
+      
 
 
       end subroutine
+    
+
+    
+    attributes(global) subroutine navier_stokes_vorticity_kernel()
+      implicit none
+      integer :: i , j
+
+      i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x 
+      j = (blockIdx%y - 1) * blockDim%y + threadIdx%y
+
+      vort_dev(i,j)=vort_dev(i,j) + dw_dev(i,j)*dt_dev  
+      if ( vort_dev(i,j) .gt. maxvort_dev) vort_dev(i,j) = maxvort_dev
+      if  (vort_dev(i,j) .lt. -maxvort_dev ) vort_dev(i,j) = -maxvort_dev
+        
+
+      end subroutine
+
+
 
 
 

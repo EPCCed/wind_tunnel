@@ -3,10 +3,10 @@ subroutine setup_local_arrays_dev()
     use vars
     use cuda_kernels
     implicit none
-    allocate(psi_dev(0:nx+1,0:ny+1), vort_dev(0:nx+1,0:ny+1), v_dev(nx,ny), u_dev(nx,ny) )
+    allocate(psi_dev(0:nx+1,0:ny+1), vort_dev(0:nx+1,0:ny+1), v_dev(nx,ny), u_dev(nx,ny), dw_dev(0:nx+1,0:ny+1) )
+    
     allocate(mask_dev(nx,ny) )
-
-
+    
 end subroutine
 
 subroutine setup_local_grid_info_from_cpu()

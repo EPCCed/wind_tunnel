@@ -13,10 +13,12 @@ subroutine getv_cpu()
     do j=1,ny
         do i=1,nx
             if (j .gt. 1 .or. j .lt. ny) u(i,j) = (psi(i,j+1)-psi(i,j-1))/2./dy
+            
             if (i .gt. 1 .or. i .lt. nx) v(i,j) = -(psi(i+1,j)-psi(i-1,j))/2./dx
         enddo
     enddo
     !$OMP END DO
+
 
     !apply top/bottom boundary conditions
     !$OMP SINGLE
@@ -35,6 +37,7 @@ subroutine getv_cpu()
         v(:,j)=v(:,j)*(1-mask(:,j))
     enddo
     !$OMP END DO
+ 
 
 end subroutine
 
