@@ -325,10 +325,10 @@ subroutine check_vorticity_evolution()
             v_backup=v_dev 
             u_backup=u_dev
 
-            print * ,"psi_sum",(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ) )
-            print * ,"vort",irank,sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) )
-            print * ,"u",irank,sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ) 
-            print * ,"v",irank,sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) ))
+            call check("psi CPU vs GPU:",abs(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ))<1e-7 )
+            call check("vorticity CPU vs GPU",abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) )) < 1e-7 )
+            call check("u velocity CPU vs GPU",abs(sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ))<1e-7 ) 
+            call check("v velocity CPU vs GPU",abs(sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) )))<1e-7)
 
             time=time+dt
     enddo
