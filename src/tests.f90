@@ -259,12 +259,13 @@ subroutine check_vorticity_evolution()
     use parallel
     use cuda_kernels
     use cudafor
+    use mpi
 
     implicit none
 
     real :: time
     double precision :: tstart=0, tstop=0,sum_psi_cpu=0
-    integer:: i
+    integer:: i,iErr
     real, dimension( :, :) , allocatable :: psi_backup
     real , dimension(0:nx+1,0:ny+1) :: vort_backup
     real , dimension(1:nx,1:ny) :: u_backup
@@ -299,9 +300,9 @@ subroutine check_vorticity_evolution()
     dw=0
     dw_dev=dw
     
-    do i = 1, 200
+    do i = 1, 20
               !if (irank .eq. 0) print*, "t=",time,"of",nx*crossing_times
-        
+            
 
             call getv_cpu() !get the velocity
     ! !         ierr=cudaDeviceSynchronize()
@@ -315,25 +316,21 @@ subroutine check_vorticity_evolution()
             call getv_gpu()
             call navier_stokes_gpu()
             call poisson_gpu(2) 
-   
+            
+            call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-            sum_psi_cpu=sum(psi(1:nx,1:ny))
+            sum_psi_cpu=sum(psi(0:nx+1,0:ny+1))
             psi_backup=psi_dev
             vort_backup=vort_dev
             v_backup=v_dev 
-            u_backup=u_dev 
+            u_backup=u_dev
 
-            print * ,(sum_psi_cpu - sum(psi_backup(1:nx,1:ny) ) )
-            print * ,"vort",sum( abs(vort(1:nx,1:ny) ) - abs(vort_backup(1:nx,1:ny) ) )
-            print * ,sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ) 
-            print * ,sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) )) 
+            print * ,"psi_sum",(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ) )
+            print * ,"vort",irank,sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) )
+            print * ,"u",irank,sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ) 
+            print * ,"v",irank,sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) ))
 
-            print * ,sum( v_backup(1:nx,1:ny) ) - sum(v(1:nx,1:ny))
-
-
-              
-
-              time=time+dt
+            time=time+dt
     enddo
 
 
