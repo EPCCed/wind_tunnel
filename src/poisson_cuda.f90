@@ -1,14 +1,13 @@
 module cuda_kernels
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
     implicit none
 
     integer, device :: nx_dev , ny_dev 
-    real,device  :: dx_dev, dy_dev
+    real(8),device  :: dx_dev, dy_dev
     integer, device :: up_dev,down_dev
 
-    real, device :: dt_dev, maxvort_dev,vmax_dev , r0_dev
+    real(8), device :: dt_dev, maxvort_dev,vmax_dev , r0_dev
 
-    real, allocatable, dimension(:,:), device :: psi_dev, vort_dev, u_dev, v_dev, mask_dev, dw_dev
+    real(8), allocatable, dimension(:,:), device :: psi_dev, vort_dev, u_dev, v_dev, mask_dev, dw_dev
 
     contains
 
@@ -68,7 +67,7 @@ module cuda_kernels
     attributes(global) subroutine navier_stokes_dw_kernel()
     implicit none  
     integer :: i , j
-    real :: uu,vv,v2,dw=0,dwdx,deltay,dwdy,deltax,r
+    real(8) :: uu,vv,v2,dw=0,dwdx,deltay,dwdy,deltax,r
 
 
     i = (blockIdx%x - 1 ) * blockDim%x + threadIdx%x 
@@ -141,9 +140,9 @@ module cuda_kernels
 
 
       integer, value :: offset
-      real , value :: w
+      real(8) , value :: w
 
-      real :: dx,dy 
+      real(8) :: dx,dy 
 
       integer :: i,j,nx,ny
 
@@ -172,7 +171,7 @@ module cuda_kernels
     end subroutine
 
     attributes(global) subroutine fill_right_boundary_kernel(psi_dev)
-      real, dimension( 0:nx_dev+1,0:ny_dev+1) , intent(inout) :: psi_dev
+      real(8), dimension( 0:nx_dev+1,0:ny_dev+1) , intent(inout) :: psi_dev
 
       integer :: j
 
@@ -189,7 +188,7 @@ module cuda_kernels
     attributes(global) subroutine fill_vertical_boundary_kernel(psi_dev)
       USE MPI
 
-      real, dimension( 0:nx_dev+1,0:ny_dev+1) , intent(inout) :: psi_dev
+      real(8), dimension( 0:nx_dev+1,0:ny_dev+1) , intent(inout) :: psi_dev
 
       integer :: i
 
@@ -225,14 +224,14 @@ module cuda_kernels
         use vars
         use cudafor
         implicit none
-        real , intent(inout), device:: array(0:nx+1,0:ny+1)
+        real(8) , intent(inout), device:: array(0:nx+1,0:ny+1)
 
 
         !send top, recieve bottom
-        call MPI_Sendrecv(array(:,ny),nx+2,MPI_REAL,up,1,array(:,0),nx+2,MPI_REAL,down,1,comm,status,ierr)
+        call MPI_Sendrecv(array(:,ny),nx+2,MPI_REAL8,up,1,array(:,0),nx+2,MPI_REAL8,down,1,comm,status,ierr)
 
         !send bottom, receive top
-        call MPI_Sendrecv(array(:,1),nx+2,MPI_REAL,down,0,array(:,ny+1),nx+2,MPI_REAL,up,0,comm,status,ierr)
+        call MPI_Sendrecv(array(:,1),nx+2,MPI_REAL8,down,0,array(:,ny+1),nx+2,MPI_REAL8,up,0,comm,status,ierr)
 
     end subroutine
 
@@ -259,7 +258,7 @@ module poisson_solver_cuda_mod
 
   subroutine fill_right_boundary_gpu(psi_dev)
     use vars
-    real, dimension( 0:nx+1,0:ny+1) , intent(inout), device :: psi_dev
+    real(8), dimension( 0:nx+1,0:ny+1) , intent(inout), device :: psi_dev
     type(dim3) :: block, grid
 
 
@@ -273,7 +272,7 @@ module poisson_solver_cuda_mod
 
   subroutine fill_vertical_boundary_gpu(psi_dev)
     use vars
-    real, dimension( 0:nx+1,0:ny+1) , intent(inout), device :: psi_dev
+    real(8), dimension( 0:nx+1,0:ny+1) , intent(inout), device :: psi_dev
     type(dim3) :: block, grid
 
     block = dim3(32,1,1)
@@ -290,7 +289,7 @@ module poisson_solver_cuda_mod
     implicit none
 
     integer,intent(in) :: n
-    real :: w 
+    real(8) :: w 
     integer :: it
     integer :: istat
     
@@ -300,7 +299,7 @@ module poisson_solver_cuda_mod
     block = dim3(16,16,1)
     grid = dim3(int( nx/(block%x ) )+1, int(ny/(block%y))+1   , 1)
     
-    w=1./(1+pi/nx_global) !optimal value of w
+    w=1.d0/(1+pi/nx_global) !optimal value of w
         
     do it=1,n 
       call poisson_solver_cuda<<<grid, block>>>(0, w )

@@ -13,11 +13,11 @@ subroutine navier_stokes_cpu()
     implicit none
 
     integer :: i, j
-    real :: uu, vv, v2
-    real :: r
+    real(8) :: uu, vv, v2
+    real(8) :: r
 
-    real :: deltax, deltay
-    real :: dwdx, dwdy
+    real(8) :: deltax, deltay
+    real(8) :: dwdx, dwdy
 
     !$OMP DO PRIVATE(uu,vv,v2,r,i, deltax, deltay, dwdx, dwdy)
     do j=1,ny

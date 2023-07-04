@@ -4,9 +4,9 @@ program tests
     use vars
     use parallel
     use poisson_solver_cuda_mod
-    real , dimension(:,:) , allocatable :: psi_backup,u_backup,v_backup,vort_backup
+    real(8) , dimension(:,:) , allocatable :: psi_backup,u_backup,v_backup,vort_backup
     integer :: rank
-    real :: tmp
+    real(8) :: tmp
 
 
     call setup_MPI()
@@ -79,7 +79,7 @@ contains
         use vars
         use cuda_kernels
         implicit none
-        real , allocatable, dimension(:,:) :: u2,v2
+        real(8) , allocatable, dimension(:,:) :: u2,v2
 
         u=0.
         v=0.
@@ -109,9 +109,9 @@ contains
             use vars
             use cuda_kernels
             implicit none 
-            real , dimension(0:nx+1,0:ny+1) :: vort2
-            real , dimension(0:nx+1,0:ny+1) :: vort_backup
-            real :: diff
+            real(8) , dimension(0:nx+1,0:ny+1) :: vort2
+            real(8) , dimension(0:nx+1,0:ny+1) :: vort_backup
+            real(8) :: diff
             
 
 
@@ -147,9 +147,9 @@ contains
     
     subroutine check_poisson_step()
         implicit none
-        real, dimension(:,:) , allocatable :: psi_backup,psi_cpu
+        real(8), dimension(:,:) , allocatable :: psi_backup,psi_cpu
         integer :: istat
-        real :: diff
+        real(8) :: diff
 
         allocate(psi_backup(lbound(psi,1):ubound(psi,1),lbound(psi,2):ubound(psi,2)))
         allocate(psi_cpu(lbound(psi,1):ubound(psi,1),lbound(psi,2):ubound(psi,2)))
@@ -196,8 +196,8 @@ contains
     subroutine check_right_boundary()
         implicit none
 
-        real, dimension( :, :) , allocatable,device :: psi_dev
-        real, dimension( :, :) , allocatable :: psi_cpu
+        real(8), dimension( :, :) , allocatable,device :: psi_dev
+        real(8), dimension( :, :) , allocatable :: psi_cpu
 
 
         allocate(psi_cpu(0:nx+1,0:ny+1) ,  psi_dev(0:nx+1,0:ny+1) )
@@ -221,8 +221,8 @@ contains
         use mpi
         implicit none
 
-        real, dimension( :, :) , allocatable,device :: psi_dev
-        real, dimension( :, :) , allocatable :: psi_cpu
+        real(8), dimension( :, :) , allocatable,device :: psi_dev
+        real(8), dimension( :, :) , allocatable :: psi_cpu
 
         allocate(psi_cpu(0:nx+1,0:ny+1) ,  psi_dev(0:nx+1,0:ny+1) )
 
@@ -263,14 +263,14 @@ subroutine check_vorticity_evolution()
 
     implicit none
 
-    real :: time
+    real(8) :: time
     double precision :: tstart=0, tstop=0,sum_psi_cpu=0
     integer:: i,iErr
-    real, dimension( :, :) , allocatable :: psi_backup
-    real , dimension(0:nx+1,0:ny+1) :: vort_backup
-    real , dimension(1:nx,1:ny) :: u_backup
-    real , dimension(1:nx,1:ny) :: v_backup
-    real, parameter :: tol = 1e-7
+    real(8), dimension( :, :) , allocatable :: psi_backup
+    real(8) , dimension(0:nx+1,0:ny+1) :: vort_backup
+    real(8) , dimension(1:nx,1:ny) :: u_backup
+    real(8) , dimension(1:nx,1:ny) :: v_backup
+    real(8), parameter :: tol = 1e-8
 
 
 
@@ -293,18 +293,20 @@ subroutine check_vorticity_evolution()
     u=0.
     v=0.
 
-    psi_dev=psi
-    vort_dev=vort
-    v_dev=v 
-    u_dev=u
-    dw=0
-    dw_dev=dw
+    
     
 
-    do while (time .lt. real(nx)*crossing_times)
+    do i= 1,2000
+
+        psi_dev=psi
+        vort_dev=vort
+        v_dev=v 
+        u_dev=u
+        dw=0
+        dw_dev=dw
             
                 !if (irank .eq. 0) print*, "t=",time,"of",nx*crossing_times
-            
+       
 
             call getv_cpu() !get the velocity
     ! !         ierr=cudaDeviceSynchronize()
@@ -313,13 +315,14 @@ subroutine check_vorticity_evolution()
     ! !         ierr=cudaDeviceSynchronize()
 
             call poisson_cpu(2) !2 poisson 'relaxation' steps
-    ! !         ierr=cudaDeviceSynchronize()
 
             call getv_gpu()
             call navier_stokes_gpu()
             call poisson_gpu(2) 
 
             call MPI_Barrier(MPI_COMM_WORLD,ierr)
+            ierr=cudaDeviceSynchronize()
+
 
             time=time+dt
         
@@ -330,6 +333,7 @@ subroutine check_vorticity_evolution()
             u_backup=u_dev
 
             call check("psi CPU vs GPU:",abs(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ))< tol )
+            print *,abs(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ))
             call check("vorticity CPU vs GPU",abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny) ) )) < tol )
             print *, abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) ))
             call check("u velocity CPU vs GPU",abs(sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ))< tol ) 

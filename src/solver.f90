@@ -17,7 +17,7 @@ subroutine solver()
 
     implicit none
 
-    real :: time
+    real(8) :: time
     double precision :: tstart=0, tstop=0
 
     !$OMP PARALLEL

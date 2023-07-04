@@ -72,11 +72,11 @@ module parallel
     subroutine distribute_data()
     ! Takes the global arrays and distributes them to the processes
 
-        call MPI_Scatter(u_global,nx*ny,MPI_REAL,u,nx*ny,MPI_REAL,0,comm,ierr)
-        call MPI_Scatter(v_global,nx*ny,MPI_REAL,v,nx*ny,MPI_REAL,0,comm,ierr)
+        call MPI_Scatter(u_global,nx*ny,MPI_REAL8,u,nx*ny,MPI_REAL8,0,comm,ierr)
+        call MPI_Scatter(v_global,nx*ny,MPI_REAL8,v,nx*ny,MPI_REAL8,0,comm,ierr)
 
-        call MPI_Scatter(psi_global,nx*ny,MPI_REAL,psi(1:nx,1:ny),nx*ny,MPI_REAL,0,comm,ierr)
-        call MPI_Scatter(vort_global,nx*ny,MPI_REAL,vort(1:nx,1:ny),nx*ny,MPI_REAL,0,comm,ierr)
+        call MPI_Scatter(psi_global,nx*ny,MPI_REAL8,psi(1:nx,1:ny),nx*ny,MPI_REAL8,0,comm,ierr)
+        call MPI_Scatter(vort_global,nx*ny,MPI_REAL8,vort(1:nx,1:ny),nx*ny,MPI_REAL8,0,comm,ierr)
 
         call MPI_Scatter(boundary_global,nx*ny,MPI_INTEGER,boundary,nx*ny,MPI_INTEGER,0,comm,ierr)
         call MPI_Scatter(mask_global,nx*ny,MPI_INTEGER,mask,nx*ny,MPI_INTEGER,0,comm,ierr)
@@ -87,11 +87,11 @@ module parallel
     subroutine collate_data()
     !takes the local arrays and collects them into the global arrays
 
-        call MPI_Gather(u,nx*ny,MPI_REAL,u_global,nx*ny,MPI_REAL,0,comm,ierr)
-        call MPI_Gather(v,nx*ny,MPI_REAL,v_global,nx*ny,MPI_REAL,0,comm,ierr)
+        call MPI_Gather(u,nx*ny,MPI_REAL8,u_global,nx*ny,MPI_REAL8,0,comm,ierr)
+        call MPI_Gather(v,nx*ny,MPI_REAL8,v_global,nx*ny,MPI_REAL8,0,comm,ierr)
 
-        call MPI_Gather(psi(1:nx,1:ny),nx*ny,MPI_REAL,psi_global,nx*ny,MPI_REAL,0,comm,ierr)
-        call MPI_Gather(vort(1:nx,1:ny),nx*ny,MPI_REAL,vort_global,nx*ny,MPI_REAL,0,comm,ierr)
+        call MPI_Gather(psi(1:nx,1:ny),nx*ny,MPI_REAL8,psi_global,nx*ny,MPI_REAL8,0,comm,ierr)
+        call MPI_Gather(vort(1:nx,1:ny),nx*ny,MPI_REAL8,vort_global,nx*ny,MPI_REAL8,0,comm,ierr)
 
         call MPI_Gather(boundary,nx*ny,MPI_INTEGER,boundary_global,nx*ny,MPI_INTEGER,0,comm,ierr)
         call MPI_Gather(mask,nx*ny,MPI_INTEGER,mask_global,nx*ny,MPI_INTEGER,0,comm,ierr)
@@ -102,13 +102,13 @@ module parallel
     ! swaps the halo values for 'array'
 
         implicit none
-        real :: array(0:nx+1,0:ny+1)
+        real(8) :: array(0:nx+1,0:ny+1)
         
         !send top, recieve bottom
-        call MPI_Sendrecv(array(:,ny),nx+2,MPI_REAL,up,1,array(:,0),nx+2,MPI_REAL,down,1,comm,status,ierr)
+        call MPI_Sendrecv(array(:,ny),nx+2,MPI_REAL8,up,1,array(:,0),nx+2,MPI_REAL8,down,1,comm,status,ierr)
 
         !send bottom, receive top
-        call MPI_Sendrecv(array(:,1),nx+2,MPI_REAL,down,0,array(:,ny+1),nx+2,MPI_REAL,up,0,comm,status,ierr)
+        call MPI_Sendrecv(array(:,1),nx+2,MPI_REAL8,down,0,array(:,ny+1),nx+2,MPI_REAL8,up,0,comm,status,ierr)
 
     end subroutine
 
