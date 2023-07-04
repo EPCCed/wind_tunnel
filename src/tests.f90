@@ -270,7 +270,7 @@ subroutine check_vorticity_evolution()
     real , dimension(0:nx+1,0:ny+1) :: vort_backup
     real , dimension(1:nx,1:ny) :: u_backup
     real , dimension(1:nx,1:ny) :: v_backup
-
+    real, parameter :: tol = 1e-7
 
 
 
@@ -300,8 +300,10 @@ subroutine check_vorticity_evolution()
     dw=0
     dw_dev=dw
     
-    do i = 1, 20
-              !if (irank .eq. 0) print*, "t=",time,"of",nx*crossing_times
+
+    do while (time .lt. real(nx)*crossing_times)
+            
+                !if (irank .eq. 0) print*, "t=",time,"of",nx*crossing_times
             
 
             call getv_cpu() !get the velocity
@@ -316,24 +318,38 @@ subroutine check_vorticity_evolution()
             call getv_gpu()
             call navier_stokes_gpu()
             call poisson_gpu(2) 
-            
+
             call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
+            time=time+dt
+        
             sum_psi_cpu=sum(psi(0:nx+1,0:ny+1))
             psi_backup=psi_dev
             vort_backup=vort_dev
             v_backup=v_dev 
             u_backup=u_dev
 
-            call check("psi CPU vs GPU:",abs(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ))<1e-7 )
-            call check("vorticity CPU vs GPU",abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) )) < 1e-7 )
-            call check("u velocity CPU vs GPU",abs(sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ))<1e-7 ) 
-            call check("v velocity CPU vs GPU",abs(sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) )))<1e-7)
+            call check("psi CPU vs GPU:",abs(sum_psi_cpu - sum(psi_backup(0:nx+1,0:ny+1) ))< tol )
+            call check("vorticity CPU vs GPU",abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny) ) )) < tol )
+            print *, abs(sum( abs(vort(0:nx+1,0:ny+1) ) - abs(vort_backup(0:nx+1,0:ny+1) ) ))
+            call check("u velocity CPU vs GPU",abs(sum( abs(u_backup(1:nx,1:ny)) ) - sum( abs(u(1:nx,1:ny)) ))< tol ) 
+            print *,"max u", maxval(u)
+            print *,"max v", maxval(v)
+
+
+            call check("v velocity CPU vs GPU",abs(sum( abs(v_backup(1:nx,1:ny)) ) - sum( abs(v(1:nx,1:ny) )))< tol )
 
             time=time+dt
     enddo
 
+    psi=psi_dev
+    vort=vort_dev
+    u=u_dev
+    v=v_dev
+    call getv_cpu()
+    call getvort_cpu()
 
+    call writetofile("output_tests.dat")
 
 end subroutine
 

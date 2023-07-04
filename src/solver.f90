@@ -35,8 +35,15 @@ subroutine solver()
     if (device == .true.) vort_dev=vort
 
     call fieldsFromGpuToCpu()
+
+    psi_dev=psi
+    vort_dev=vort
+    v_dev=v 
+    u_dev=u
+    dw=0
+    dw_dev=dw
+
 #endif
-    call getv_cpu()
 
     ! !write out the potential flow to file.
 

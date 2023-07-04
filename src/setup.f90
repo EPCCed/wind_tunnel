@@ -173,7 +173,7 @@ subroutine set_up_vorticity()
     
     if (vorticity) then 
         cfl_r0 = 0.25*dx*dy*R0
-        cfl_v = 0.25*dx/1. !assume velocty is 1
+        cfl_v = 0.25*dx/10. !assume velocty is 1
 
         !dt is set according to the most restrictive CFL condition
         dt = minval((/ cfl_r0, cfl_v /))
