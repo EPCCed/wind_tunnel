@@ -28,9 +28,13 @@ target_link_options( windtunnel PUBLIC -Wall -O3 -g )
 target_link_libraries(windtunnel PUBLIC OpenMP::OpenMP_Fortran)
 
 if ( ${USE_CUDA} )
-    target_compile_options( windtunnel PUBLIC -Mcuda=nordc )    
-    target_link_options( windtunnel PUBLIC -Mcuda=nordc )
-
+   if(${CMAKE_CUDA_COMPILER_VERSION} VERSION_LESS_EQUAL '12.0.0')
+    target_compile_options( windtunnel PUBLIC -Mcuda=nordc -Mfree )
+    target_link_options( windtunnel PUBLIC -Mcuda=nordc -Mfree )
+   else()
+    target_compile_options( windtunnel PUBLIC -gpu=${GPU_OPTS} -cuda -Mfree)
+    target_link_options( windtunnel PUBLIC -gpu=${GPU_OPTS} -cuda -Mfree )
+   endif()
 endif()
 
 
@@ -39,10 +43,16 @@ target_compile_options( tests PUBLIC -Wall -O3 -g  )
 target_link_options( tests PUBLIC -Wall -O3 -g )
 target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
 
-if ( ${USE_CUDA} )
-    target_compile_options( tests PUBLIC -Mcuda=nordc )    
-    target_link_options( tests PUBLIC -Mcuda=nordc )
+if ( ${TESTS} )
+  add_executable( tests tests.f90 ${SOURCE_FILES})
+  target_compile_options( tests PUBLIC -Wall -O3 -g  )
+  target_link_options( tests PUBLIC -Wall -O3 -g )
+  target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
 
+  if ( ${USE_CUDA} )
+   target_compile_options( tests PUBLIC -Mcuda=nordc -Mfree)
+   target_link_options( tests PUBLIC -Mcuda=nordc -Mfree)
+  endif()
 endif()
 
 
