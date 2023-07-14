@@ -17,7 +17,17 @@ If building with GPU support then you should define the USE_CUDA variable
 ```bash
 FC=mpif90 cmake ../ -DUSE_CUDA=ON
 ```
+Default GPU_OPTS is set to ccnative,nordc.
 
+For compilation specifc to a model of GPU, set to ccXY, for example on Tesla V100:
+```bash
+FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc
+```
+
+TESTS variable is used to determine if to build tests.
+```bash
+FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
+```
 
 ## Running 
 An example input file is present in the file `config.txt`. 

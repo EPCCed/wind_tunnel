@@ -27,26 +27,31 @@ target_compile_options( windtunnel PUBLIC -Wall -O3 -g  )
 target_link_options( windtunnel PUBLIC -Wall -O3 -g )
 target_link_libraries(windtunnel PUBLIC OpenMP::OpenMP_Fortran)
 
-if ( ${USE_CUDA} )
-    target_compile_options( windtunnel PUBLIC -Mcuda=nordc )    
-    target_link_options( windtunnel PUBLIC -Mcuda=nordc )
-
-endif()
-
 
 if ( ${USE_CUDA} )
+   
+  
+   set( GPU_FLAGS -gpu=${GPU_OPTS} -cuda -Mfree )
+   
 
+   target_compile_options( windtunnel PUBLIC ${GPU_FLAGS} )
+   target_link_options( windtunnel PUBLIC ${GPU_FLAGS}  )
+   
+
+   if ( ${TESTS} )
    add_executable( tests tests.f90 ${SOURCE_FILES})
    target_compile_options( tests PUBLIC -Wall -O3 -g  )
    target_link_options( tests PUBLIC -Wall -O3 -g )
    target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
 
-    target_compile_options( tests PUBLIC -Mcuda=nordc )    
-    target_link_options( tests PUBLIC -Mcuda=nordc )
-
-
-
+   
+   target_compile_options( tests PUBLIC ${GPU_FLAGS} )
+   target_link_options( tests PUBLIC ${GPU_FLAGS})
+   endif()
 endif()
+
+
+
 
 
 #target_link_libraries( windtunnel PUBLIC MPI::MPI_Fortran )
