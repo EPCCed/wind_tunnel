@@ -34,14 +34,17 @@ if ( ${USE_CUDA} )
 endif()
 
 
-add_executable( tests tests.f90 ${SOURCE_FILES})
-target_compile_options( tests PUBLIC -Wall -O3 -g  )
-target_link_options( tests PUBLIC -Wall -O3 -g )
-target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
-
 if ( ${USE_CUDA} )
+
+   add_executable( tests tests.f90 ${SOURCE_FILES})
+   target_compile_options( tests PUBLIC -Wall -O3 -g  )
+   target_link_options( tests PUBLIC -Wall -O3 -g )
+   target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
+
     target_compile_options( tests PUBLIC -Mcuda=nordc )    
     target_link_options( tests PUBLIC -Mcuda=nordc )
+
+
 
 endif()
 
