@@ -32,7 +32,7 @@ FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
 ## Running 
 An example input file is present in the file `config.txt`. 
 The main variables are the parameters `alpha`, the angle of attack, `m` the camber and  `t`, the thickness in the section `&SHAPEPARAMS` .
-Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ).
+Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ), `nx_global` and `ny_global` the grid size respectively in the `x` and `y` direction. 
 The calculation can be launched on the GPU by setting `device = .TRUE.` 
 You can then run the program with
 ```
