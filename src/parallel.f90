@@ -36,6 +36,22 @@ module parallel
         call MPI_Comm_size(MPI_COMM_WORLD, isize, ierr)
 
 
+        
+
+        call MPI_Comm_rank(comm, irank, ierr)
+
+       
+
+        if (irank .eq. 0) then
+            print*,"Running on ",isize," processes"
+            print*,"With",threads," threads per process"
+            print*,"Total parallel regions=",isize*threads
+        endif
+
+    end subroutine
+
+    subroutine set_cartesian_communicator()
+        
         if (modulo(ny_global,isize) .ne. 0) then
             print*, "Incompatible ny with number of processors"
             stop
@@ -52,18 +68,9 @@ module parallel
         endif
 
         CALL MPI_Cart_create(MPI_COMM_WORLD,ndims,dims,periods,reorder,comm,ierr)
-
-
-        call MPI_Comm_rank(comm, irank, ierr)
-
-        !find the processes above and below the current one
+        
+         !find the processes above and below the current one
         call MPI_Cart_shift(comm,0,1,down,up,ierr)
-
-        if (irank .eq. 0) then
-            print*,"Running on ",isize," processes"
-            print*,"With",threads," threads per process"
-            print*,"Total parallel regions=",isize*threads
-        endif
 
 
     end subroutine

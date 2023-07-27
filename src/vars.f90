@@ -7,8 +7,8 @@ implicit none
     !grid parameters
 
     !number of cells in x and y direction (global)
-    integer, parameter :: nx_global = 576
-    integer, parameter :: ny_global = 576
+    integer :: nx_global = 576
+    integer :: ny_global = 576
 
     !number of cells in x and y direction (local)
     integer :: nx, ny
@@ -18,8 +18,8 @@ implicit none
     real(8), parameter :: yrange(2) = (/ -2., 2. /)
 
     !grid spacing in "real(8)" units
-    real(8) :: dxx = (xrange(2)-xrange(1))/(real(nx_global)-1)
-    real(8) :: dyy = (yrange(2)-yrange(1))/(real(ny_global)-1)
+    real(8) :: dxx 
+    real(8) :: dyy
 
     !grid spacing in computational units
     real(8) :: dx=1.
@@ -85,7 +85,7 @@ implicit none
     !define namelists for reading in config files
     NAMELIST /vortparams/ vorticity,maxvort,r0,vortcoeff
     NAMELIST /mediumparams/  p0,rho,airspeed
-    NAMELIST /shapeparams/ shape, alpha, a, b, c, m, t, p
+    NAMELIST /shapeparams/ shape, alpha, a, b, c, m, t, p,nx_global,ny_global
     NAMELIST /gpuparams/ device
 
 

@@ -12,9 +12,7 @@ program windtunnel
     call setup_MPI()
 
     call get_params()
-
-   
-
+    
 
     call setup()
 #ifdef USE_CUDA
