@@ -300,10 +300,12 @@ module poisson_solver_cuda_mod
     grid = dim3(int( nx/(block%x ) )+1, int(ny/(block%y))+1   , 1)
     
     w=1.d0/(1+pi/nx_global) !optimal value of w
-        
-    do it=1,n 
+
+    do it=1,n
+
       call poisson_solver_cuda<<<grid, block>>>(0, w )
       ierr=cudaDeviceSynchronize()
+
       call haloswap_device(psi_dev)
       !istat=cudaDeviceSynchronize()
       ierr=cudaDeviceSynchronize()

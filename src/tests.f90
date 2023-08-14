@@ -52,7 +52,7 @@ program tests
     !call mpi_finalize(ierr)
 
     call check_vorticity_evolution()
-
+    
 
 contains
 

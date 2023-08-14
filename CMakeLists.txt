@@ -17,5 +17,9 @@ endif()
 project( wind_tunnel LANGUAGES ${project_languages} )
 find_package(OpenMP REQUIRED)
 
-
 add_subdirectory( src )
+
+enable_testing()
+
+
+add_subdirectory(tests)
