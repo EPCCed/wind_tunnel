@@ -1,25 +1,27 @@
+
+
 subroutine writetofile(fname)
 !writes the results of the simulation to a binary file
 !also calculates the pressure and ram pressure forces on the object
     use vars
     use parallel
+    use iso_fortran_env, only: dp=> real64, sp=> real32
     implicit none
 
     character (len=*) :: fname
-    real, allocatable :: u2(:,:), pressure(:,:)
-    real :: bernoulli
+    real(kind=dp), allocatable :: u2(:,:), pressure(:,:)
+    real(kind=dp) :: bernoulli
     integer :: i, j
 
-    real, allocatable, dimension(:,:) :: toppres, sidepres, du, dv
-    real, allocatable, dimension(:,:) ::  sideboundary, toptheta, sidetheta
+    real(kind=dp), allocatable, dimension(:,:) :: toppres, sidepres, du, dv
+    real(kind=dp), allocatable, dimension(:,:) ::  sideboundary, toptheta, sidetheta
 
-    real :: frontarea, toparea
+    real(kind=dp) :: frontarea, toparea
 
 
-    real :: plift, pdrag, ram, ramlift, lift, drag
-    real :: u0
-    real :: c_lift, c_drag
-
+    real(kind=dp) :: plift, pdrag, ram, ramlift, lift, drag
+    real(kind=dp) :: u0
+    real(kind=dp) :: c_lift, c_drag
 
     !update velocities
     call getv()

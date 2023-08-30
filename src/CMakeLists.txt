@@ -1,7 +1,26 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-set(SOURCE_FILES vars.f90 get_params.f90 getv.f90 navier_stokes.f90 parallel.f90 poisson.f90 setup.f90 solver.f90 writetofile.f90 getvort.f90 )
+function( configure_target target)
+   target_compile_options( ${target} PUBLIC -Wall -O3 -g  )
+   target_link_options( ${target} PUBLIC -Wall -O3 -g )
+   target_link_libraries(${target} PUBLIC OpenMP::OpenMP_Fortran)
+   target_link_libraries( ${target} PUBLIC MPI::MPI_Fortran )
+   target_include_directories( ${target} PUBLIC ${MPI_FORTRAN_DIRS} )
+   
+   if ( ${USE_CUDA} )   
+   
+      set( GPU_FLAGS -gpu=${GPU_OPTS} -cuda -Mfree )
+      target_compile_options( ${target} PUBLIC ${GPU_FLAGS} )
+      target_link_options( ${target} PUBLIC ${GPU_FLAGS}  )
+
+   endif()
+
+endfunction()
+
+
+
+set(SOURCE_FILES timing.f90 timing_cfd.f90 vars.f90 get_params.f90 getv.f90 navier_stokes.f90 parallel.f90 poisson.f90 setup.f90 solver.f90 writetofile.f90 getvort.f90 )
 
 #configure_file (
 #    "${PROJECT_SOURCE_DIR}/src/build_info.f90.in"
@@ -15,45 +34,18 @@ if ( ${USE_CUDA} )
 endif()
 
 
-
-
 set_source_files_properties(
    ${SOURCE_FILES} windtunnel.f90 tests.f90 PROPERTIES Fortran_PREPROCESS ON
    )
 
 
 add_executable( windtunnel windtunnel.f90 ${SOURCE_FILES})
-target_compile_options( windtunnel PUBLIC -Wall -O3 -g  )
-target_link_options( windtunnel PUBLIC -Wall -O3 -g )
-target_link_libraries(windtunnel PUBLIC OpenMP::OpenMP_Fortran)
-
-
+configure_target( windtunnel )
+   
 if ( ${USE_CUDA} )
-   
-  
-   set( GPU_FLAGS -gpu=${GPU_OPTS} -cuda -Mfree )
-   
-
-   target_compile_options( windtunnel PUBLIC ${GPU_FLAGS} )
-   target_link_options( windtunnel PUBLIC ${GPU_FLAGS}  )
-   
-
    if ( ${TESTS} )
-   add_executable( tests tests.f90 ${SOURCE_FILES})
-   target_compile_options( tests PUBLIC -Wall -O3 -g  )
-   target_link_options( tests PUBLIC -Wall -O3 -g )
-   target_link_libraries(tests PUBLIC OpenMP::OpenMP_Fortran)
-
-   
-   target_compile_options( tests PUBLIC ${GPU_FLAGS} )
-   target_link_options( tests PUBLIC ${GPU_FLAGS})
+      add_executable( tests tests.f90 ${SOURCE_FILES})
    endif()
 endif()
-
-
-
-
-
-#target_link_libraries( windtunnel PUBLIC MPI::MPI_Fortran )
 
 install(TARGETS windtunnel )

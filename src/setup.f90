@@ -4,17 +4,19 @@ subroutine setup()
 
     use vars
     use parallel
-    
+    use timing_cfd
     implicit none
     
     integer :: i,j
     
     real(8) :: ysum, yhat
     integer :: nums
-    
-    
+
     call setup_mesh_spacing()
     call set_cartesian_communicator()
+
+    call initCFDTimers()
+    
     
     ! report if running on CPU or on GPU
     if (irank .eq. 0) then
