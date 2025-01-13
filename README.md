@@ -21,16 +21,16 @@ If building with GPU support then you should define the USE_CUDA variable:
 ```bash
 FC=mpif90 cmake ../ -DUSE_CUDA=ON
 ```
-Default GPU_OPTS is set to ccnative,nordc.
-
 If you are not going to use GPU support then specify `-DUSE_CUDA=OFF`.
 
-For compilation specifc to a model of GPU, set to ccXY, for example on Tesla V100:
+Default `GPU_OPTS` is set to `ccnative,nordc`.
+
+For compilation specifc to a GPU model set to ccXY. For example, for a Tesla V100:
 ```bash
 FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc
 ```
 
-TESTS variable is used to determine if to build tests.
+`TESTS` variable is used to determine whether to build tests.
 
 ```bash
 FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
@@ -47,17 +47,18 @@ The main variables are the parameters:
 * `t` the thickness of the wing
 
 in the `&SHAPEPARAMS` section.
+
 Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ), `nx_global` and `ny_global` the grid size respectively in the `x` and `y` direction. 
 
 The calculation can be launched on the GPU by setting `device = .TRUE.` 
 You can then run the program with:
 
-```
+```bash
 export OMP_NUM_THREADS=${OMP_THREADS}
 mpirun -np ${NUM_RANKS} windtunnel
 ```
 
-where OMP_THREADS and NUM_RANKS are environment variables you have set to indicate the number of threads and processes you are going to run the program on. The program will write the output binary files:
+where `OMP_THREADS` and `NUM_RANKS` are environment variables you have set to indicate the number of threads and processes you are going to run the program on. The program will write the output binary files:
 
 - output.dat
 - potential.dat 
