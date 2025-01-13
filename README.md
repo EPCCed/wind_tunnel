@@ -1,5 +1,8 @@
 # Windtunnel simulation
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A toy model that solves the Navier-Stokes equation for the flow around a wind.
+
 ## Compiling
 These instructions were tested on [cirrus](https://www.cirrus.ac.uk/) with:
 - cmake/3.25.2
@@ -36,7 +39,7 @@ FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
 ## Running 
 
 An example input file is present in the file `config.txt`. 
-<<<<<<< HEAD
+
 The main variables are the parameters:
 
 * `alpha` the angle of attack of the wing to the horizontal in the direction of travel,
