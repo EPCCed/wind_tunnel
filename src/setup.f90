@@ -4,13 +4,19 @@ subroutine setup()
 
     use vars
     use parallel
-    
+    use timing_cfd
     implicit none
     
     integer :: i,j
     
     real(8) :: ysum, yhat
     integer :: nums
+
+    call setup_mesh_spacing()
+    call set_cartesian_communicator()
+
+    call initCFDTimers()
+    
     
     ! report if running on CPU or on GPU
     if (irank .eq. 0) then
@@ -19,11 +25,15 @@ subroutine setup()
             print *, "Using the GPU device"
         else
             print *, "Using the CPU device"
+            
         endif 
-    
+        
+        print *, "mesh size: (",nx_global,ny_global,")"
+
     endif 
 
-
+    
+    
 
     !main process sets up global arrays
     if (irank .eq. 0) then  
@@ -178,5 +188,13 @@ subroutine set_up_vorticity()
         !dt is set according to the most restrictive CFL condition
         dt = minval((/ cfl_r0, cfl_v /))
     endif
+
+end subroutine
+
+subroutine setup_mesh_spacing()
+    use vars
+
+    dxx = (xrange(2)-xrange(1))/(real(nx_global)-1)
+    dyy = (yrange(2)-yrange(1))/(real(ny_global)-1)
 
 end subroutine

@@ -1,4 +1,6 @@
 program windtunnel
+    use timing_cfd
+
 !simulates an object in a windtunnel
 
     use vars
@@ -13,18 +15,18 @@ program windtunnel
 
     call get_params()
 
-   
-
-
     call setup()
 #ifdef USE_CUDA
     call setup_gpu()
 #endif
-
+    
     call solver()
 
     call writetofile('output.dat')
 
+    call CFDTimers%write(6)
+
     call MPI_Finalize(ierr)
+
 
 end program

@@ -14,18 +14,19 @@ subroutine solver()
     use cuda_kernels
     use cudafor
 #endif
+    use timing_cfd
 
     implicit none
 
     real(8) :: time
     double precision :: tstart=0, tstop=0
 
+    call CFDTimers%timers(4)%start
     !$OMP PARALLEL
     !solve Laplace's equation for the irrotational flow profile (vorticity=0)
     call poisson(5000)
     !$OMP END PARALLEL
-
-
+    call CFDTimers%timers(4)%stop
 
     !get the vorticity on the surface of the object
     ! ierr=cudaDeviceSynchronize()
@@ -48,7 +49,7 @@ subroutine solver()
     ! !write out the potential flow to file.
 
     call writetofile("potential.dat")
-    
+
     
     ! !if the user has chosen to allow vorticity:
      if (vorticity) then

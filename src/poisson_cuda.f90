@@ -286,6 +286,7 @@ module poisson_solver_cuda_mod
   subroutine poisson_gpu( n)
     use vars
     use parallel
+    use timing_cfd
     implicit none
 
     integer,intent(in) :: n
@@ -300,27 +301,38 @@ module poisson_solver_cuda_mod
     grid = dim3(int( nx/(block%x ) )+1, int(ny/(block%y))+1   , 1)
     
     w=1.d0/(1+pi/nx_global) !optimal value of w
-        
-    do it=1,n 
+
+    do it=1,n
+      call CFDTimers%timers(1)%start
       call poisson_solver_cuda<<<grid, block>>>(0, w )
       ierr=cudaDeviceSynchronize()
+      call CFDTimers%timers(1)%stop
+
+      call CFDTimers%timers(2)%start
       call haloswap_device(psi_dev)
-      !istat=cudaDeviceSynchronize()
       ierr=cudaDeviceSynchronize()
+      call CFDTimers%timers(2)%stop
 
+      call CFDTimers%timers(1)%start
       call poisson_solver_cuda<<<grid, block>>>(1, w )
-
       ierr=cudaDeviceSynchronize()
+      call CFDTimers%timers(1)%stop
+
+      call CFDTimers%timers(3)%start
       call fill_right_boundary_gpu(psi_dev)
       ierr=cudaDeviceSynchronize()
+      call CFDTimers%timers(3)%stop
 
+      call CFDTimers%timers(2)%start
       call haloswap_device(psi_dev)
       ierr=cudaDeviceSynchronize()
+      call CFDTimers%timers(2)%stop
 
+      call CFDTimers%timers(3)%start
       call fill_vertical_boundary_gpu(psi_dev)
-
       ierr=cudaDeviceSynchronize()
-
+      call CFDTimers%timers(3)%stop
+      
       
       !istat=cudaDeviceSynchronize()
 

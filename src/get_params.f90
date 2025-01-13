@@ -61,6 +61,8 @@ subroutine get_params()
     call MPI_Bcast(r0,1,MPI_REAL,0,comm,ierr)
     call MPI_Bcast(vortcoeff,1,MPI_REAL,0,comm,ierr)
     call MPI_Bcast(device,1,MPI_LOGICAL,0,comm,ierr)
+    call MPI_Bcast(nx_global,1,MPI_INTEGER,0,comm,ierr)
+    call MPI_Bcast(ny_global,1,MPI_INTEGER,0,comm,ierr)
     
 
 

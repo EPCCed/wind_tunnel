@@ -4,10 +4,7 @@ program tests
     use vars
     use parallel
     use poisson_solver_cuda_mod
-    real(8) , dimension(:,:) , allocatable :: psi_backup,u_backup,v_backup,vort_backup
-    integer :: rank
-    real(8) :: tmp
-
+    use test_tools
 
     call setup_MPI()
 
@@ -18,63 +15,12 @@ program tests
     call setup()
 
     call setup_gpu()
-
-    !call solver()
-
-    !call writetofile('output.dat')
-
-    !call getv_cpu()
-
-    !call MPI_Comm_rank ( MPI_COMM_WORLD, rank, ierr )
-
-    !call MPI_Barrier(MPI_COMM_WORLD,ierr)
-    !if (rank == 0) print *,"sum_vort", sum( abs(vort) )
-    !call MPI_Barrier(MPI_COMM_WORLD,ierr)
-    !if (rank == 1) print "(A,' ',F10.7)","sum_vort", sum( v) 
-
-    ! if (device == .true.) psi=psi_dev
-
-    ! print *,sum( psi)
-
-
-
-
-    !call check_vertical_boundary()
-    
-    !call check_right_boundary()
-
-    !call check_poisson_step()
-
-    !call check_vorticity()
-
-    !call check_velocity()
-
     
     call check_vorticity_evolution()
     
     call mpi_finalize(ierr)
 
-
 contains
-
-    subroutine check( message, condition)
-        logical, intent(in) :: condition
-        character(len=*) :: message
-        character(len=40) :: color
-
-
-
-        if ( condition) then
-            color='\033[32m'
-        else
-            color='\033[0;31m'
-        endif 
-
-        print * , trim(color) //trim(message)  , condition, '\033[0m'
-
-        
-    end subroutine
-
 
     subroutine check_velocity()
         use vars
