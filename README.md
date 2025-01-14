@@ -3,6 +3,12 @@
 
 A toy model that solves the Navier-Stokes equation for the flow around a wind.
 
+## Contents
+
+* [Compiling](#compiling)
+* [Running](#running)
+* [Wing shape](#wing-shape)
+
 ## Compiling
 These instructions were tested on [cirrus](https://www.cirrus.ac.uk/) with:
 - cmake/3.25.2
@@ -74,6 +80,6 @@ Also several bits of information are printed out to standard output, including t
 
 ![Velocity](visualize/velocity.png)
 
-## Wind shape
+## Wing shape
 The shape of the wing is a cambered 4-digit NACA airfoil [https://en.wikipedia.org/wiki/NACA_airfoil ](https://en.wikipedia.org/wiki/NACA_airfoil) . An implementation is found in the `areofoil` routine at `vars.f90:159`.
 
