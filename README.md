@@ -56,7 +56,7 @@ in the `&SHAPEPARAMS` section.
 
 Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ), `nx_global` and `ny_global` the grid size respectively in the `x` and `y` direction. 
 
-The calculation can be launched on the GPU by setting `device = .TRUE.` 
+The calculation can be launched on a GPU by setting `device = .TRUE.` 
 You can then run the program with:
 
 ```bash
@@ -70,7 +70,7 @@ where `OMP_THREADS` and `NUM_RANKS` are environment variables you have set to in
 - potential.dat 
 
 The output files contain a binary dump of arrays containing grid and field information.
-Also several information is printed out in the standard output, including drag and lift.
+Also several bits of information are printed out to standard output, including the wing drag and lift.
 
 ![Velocity](visualize/velocity.png)
 
