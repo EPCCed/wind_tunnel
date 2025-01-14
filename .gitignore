@@ -1,1 +1,4 @@
+# Files not to add to the repo.
 build/
+*.o
+*.mod
