@@ -36,6 +36,12 @@ FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc
 FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
 ```
 
+This will generate a Makefile in the `build` directory. To compile the code run:
+
+```bash
+make
+```
+
 ## Running 
 
 An example input file is present in the file `config.txt`. 
