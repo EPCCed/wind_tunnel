@@ -67,10 +67,13 @@ You can then run the program with:
 
 ```bash
 export OMP_NUM_THREADS=${OMP_THREADS}
-mpirun -np ${NUM_RANKS} windtunnel
+cp ../config.txt ./src
+mpirun -np ${NUM_RANKS} ./src/windtunnel
 ```
 
-where `OMP_THREADS` and `NUM_RANKS` are environment variables you have set to indicate the number of threads and processes you are going to run the program on. The program will write the output binary files:
+where `OMP_THREADS` and `NUM_RANKS` are environment variables you have set to indicate the number of threads and processes you are going to run the program on. You also need to copy the configuration parameters to the same directory where the executable is going to run from.
+
+The program will write the output binary files:
 
 - output.dat
 - potential.dat 
