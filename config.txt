@@ -1,10 +1,10 @@
 &SHAPEPARAMS
-SHAPE= 2,
-ALPHA= 8.000000,
-M= 0.300000,
-T= 0.230000,
-nx_global=576,
-ny_global= 576,
+SHAPE= 2,         ! 1=ellipse, 2=aerofoil.
+ALPHA= 8.000000,  ! angle of attack (in degrees)
+M= 0.300000,      ! Maximum camber (curvature of an airfoil)
+T= 0.230000,      ! Thickness (as a fraction of the wing length)
+nx_global=576,    ! number of cells in the x-direction.
+ny_global= 576,   ! number of cells in the y-direction.
 /
 &VORTPARAMS
 VORTICITY= .TRUE.
