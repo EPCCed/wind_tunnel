@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.11)
 
 set(SOURCE_FILES timing.f90 timing_cfd.f90 vars.f90 get_params.f90 getv.f90 navier_stokes.f90 parallel.f90 poisson.f90 setup.f90 solver.f90 writetofile.f90 getvort.f90 )
 
