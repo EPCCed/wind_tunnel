@@ -1,4 +1,11 @@
 # Files not to add to the repo.
+# Ignore the build directory and other stuff.
 build/
 *.o
 *.mod
+# Ignore output files
+output.dat
+potential.dat
+simulation.png
+# Ignore executable
+windtunnel
