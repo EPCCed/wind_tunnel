@@ -143,9 +143,10 @@ implicit none
         real(8) :: xdum2, ydum2
         real(8) :: angle
 
-        !rotate the input coordinates by the angle of attack
+        ! convert angle of attack to radians
         angle=alpha*dtor
 
+        !rotate the input coordinates by the angle of attack
         xdum2=xdum*cos(angle) - ydum*sin(angle)
         ydum2=ydum*cos(angle) + xdum*sin(angle)
 
@@ -175,9 +176,10 @@ implicit none
         real(8) :: xdum2, ydum2
         real(8) :: angle
 
-        !rotate input coordinates by angle of attack
+        ! convert angle of attack to radians
         angle=alpha*dtor
 
+        !rotate input coordinates by angle of attack
         xdum2=xdum*cos(angle) - ydum*sin(angle)
         ydum2=ydum*cos(angle) + xdum*sin(angle)
 
