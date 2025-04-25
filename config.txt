@@ -7,8 +7,8 @@ nx_global=576,    ! number of cells in the x-direction.
 ny_global= 576,   ! number of cells in the y-direction.
 /
 &VORTPARAMS
-VORTICITY= .TRUE.
+VORTICITY= .TRUE. ! set vorticity on (.TRUE)/off (.FALSE.)
 /
 &GPUPARAMS
-DEVICE= .FALSE.
+DEVICE= .FALSE.   ! using GPUs (.TRUE.)/ Using CPUs (.FALSE.)
 /
