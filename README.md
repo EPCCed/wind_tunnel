@@ -21,15 +21,12 @@ mkdir build
 cd build
 FC=mpif90 cmake ../
 ```
-in a shell.
-If building with GPU support then you should define the USE_CUDA variable: 
+If building without GPU support then you need to explicitly set the USE_CUDA variable (the default is ON): 
 
 ```bash
-FC=mpif90 cmake ../ -DUSE_CUDA=ON
+FC=mpif90 cmake ../ -DUSE_CUDA=OFF
 ```
-If you are not going to use GPU support then specify `-DUSE_CUDA=OFF`.
-
-Default `GPU_OPTS` is set to `ccnative,nordc`.
+The default `GPU_OPTS` is set to `ccnative,nordc`.
 
 For compilation specifc to a GPU model set to ccXY. For example, for a Tesla V100:
 ```bash
