@@ -1,74 +1,49 @@
 # Windtunnel simulation
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-A toy model that solves the Navier-Stokes equation for the flow around a wind.
-
-## Contents
-
-* [Compiling](#compiling)
-* [Running](#running)
-* [Wing shape](#wing-shape)
-
+A toy model that solves the navier stokes equation for the flow around a wind.
 ## Compiling
-These instructions were tested on [cirrus](https://www.cirrus.ac.uk/) with:
+These instructions were tested on cirrus with
 - cmake/3.25.2
 - nvhpc/22.2
-The nvhpc suite provides the Fortran openmpi cuda aware implementation.
+The nvhpc suite provides the fortran openmpi cuda aware implementation.
 
-You will need a fortran compiler and CMake installed. You will also need a MPI library. If building with CUDA support, the MPI library needs to be CUDA aware. In most cases , it should be enough to run: 
+You will need a fortran compiler and CMake installed. You will also need a MPI library. If building with cuda support, the mpi library needs to be cuda aware. In most cases , it should be enough to run 
 ```bash
 mkdir build
 cd build
 FC=mpif90 cmake ../
 ```
-If building without GPU support then you need to explicitly set the USE_CUDA variable (the default is ON): 
-
+in a shell.
+If building with GPU support then you should define the USE_CUDA variable 
 ```bash
-FC=mpif90 cmake ../ -DUSE_CUDA=OFF
-```
-The default `GPU_OPTS` is set to `ccnative,nordc`.
-
-For compilation specifc to a GPU model set to ccXY. For example, for a Tesla V100:
-```bash
-FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc
+FC=mpif90 cmake ../ -DUSE_CUDA=ON
 ```
 
-`TESTS` variable is used to determine whether to build tests.
-
-```bash
-FC=mpif90 cmake ../ -DUSE_CUDA=ON -DGPU_OPTS=cc70,nordc -DTESTS=ON
-```
-
-This will generate a Makefile in the `build` directory. To compile the code run:
-
-```bash
-make
-```
 
 ## Running 
-
 An example input file is present in the file `config.txt`. 
-
 The main variables are the parameters:
 
-* `alpha` the angle of attack of the wing to the horizontal in the direction of travel,
-* `m` the camber (the shape of the wing) and  
-* `t` the thickness of the wing
+*  `ALPHA`, the angle of attack,
+*  `M` the maximum camber and  
+* `T` the thickness of the wing section (as a faction of the wing length)
 
-in the `&SHAPEPARAMS` section.
+in the section `&SHAPEPARAMS`.  Additional variables in this section are `nx_global` and `ny_global` the number of cells in the x and y direction respectively.
 
-Additional variables in this section are the parameters of the ellipse ( `a` axis in the  x direction , `b` axis in y direction , `p` , `c` location of the maximum camber, `c` chord ), `nx_global` and `ny_global` the grid size respectively in the `x` and `y` direction. 
+The calculation can be launched on the GPU by setting `device = .TRUE.` or `device= .FALSE.`.
 
-The calculation can be launched on a GPU by setting `device = .TRUE.` 
-You can then run the program with:
+If you are going to run the code from the `build` directory then you will need to do:
 
 ```bash
-export OMP_NUM_THREADS=${OMP_THREADS}
-cp ../config.txt ./src
-mpirun -np ${NUM_RANKS} ./src/windtunnel
+cp src/windtunnel .  # Copy the executable to the local directory
+cp ../config.txt .   # Copy the configuration file to the local directory.
 ```
 
-where `OMP_THREADS` and `NUM_RANKS` are environment variables you have set to indicate the number of threads and processes you are going to run the program on. You also need to copy the configuration parameters to the same directory where the executable is going to run from.
+You can then run the program with where you can replace `OMP_THREADS` by an environment variable or an integer less or equal to the number of cores available on your machine and `NUM_RANKS` again will be set as an environment variable or an integer number.
+
+```
+export OMP_NUM_THREADS=${OMP_THREADS}
+mpirun -np ${NUM_RANKS} windtunnel
+```
 
 The program will write the output binary files:
 
@@ -76,10 +51,10 @@ The program will write the output binary files:
 - potential.dat 
 
 The output files contain a binary dump of arrays containing grid and field information.
-Also several bits of information are printed out to standard output, including the wing drag and lift.
+Also several information is printed out in the standard output, including drag and lift.
 
 ![Velocity](visualize/velocity.png)
 
-## Wing shape
-The shape of the wing is a cambered 4-digit NACA airfoil [https://en.wikipedia.org/wiki/NACA_airfoil ](https://en.wikipedia.org/wiki/NACA_airfoil) . An implementation is found in the `areofoil` routine in `vars.f90`.
+## Wind shape
+The shape of the wing is a cambered 4-digit NACA airfoil [https://en.wikipedia.org/wiki/NACA_airfoil ](https://en.wikipedia.org/wiki/NACA_airfoil) . An implementation is found in the `areofoil` routine at `vars.f90:159`.
 
