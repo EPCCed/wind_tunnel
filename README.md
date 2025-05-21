@@ -37,10 +37,11 @@ cp src/windtunnel .  # Copy the executable to the local directory
 cp ../config.txt .   # Copy the configuration file to the local directory.
 ```
 
-You can then run the program with where you can replace `OMP_THREADS` by an environment variable or an integer less or equal to the number of cores available on your machine and `NUM_RANKS` again will be set as an environment variable or an integer number.
+You can then run the program by assigning the environment variable `OMP_NUM_THREADS` with an integer less or equal to the number of cores available on your machine and `NUM_RANKS` can be set as the number of MPI processes to run the code on.
 
-```
-export OMP_NUM_THREADS=${OMP_THREADS}
+```bash
+export OMP_NUM_THREADS=1 # Number of OpenMP threads to use
+export NUM_RANKS=4       # Number of MPI processes to run on
 mpirun -np ${NUM_RANKS} windtunnel
 ```
 
