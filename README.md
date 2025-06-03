@@ -35,6 +35,8 @@ If you run the code from the `build` directory, you will need to:
 ```bash
 cp src/windtunnel .  # Copy the executable to the local directory
 cp ../config.txt .   # Copy the configuration file to the local directory.
+export OMP_NUM_THREADS=${OMP_THREADS}
+mpirun -np ${NUM_RANKS} ./windtunnel
 ```
 
 You can then run the program by assigning the environment variable `OMP_NUM_THREADS` with an integer less or equal to the number of cores available on your machine and `NUM_RANKS` can be set as the number of MPI processes to run the code on.
