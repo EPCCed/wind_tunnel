@@ -56,13 +56,26 @@ subroutine get_params()
         close(10)
     endif
 
-    call MPI_Bcast(vorticity,1,MPI_LOGICAL,0,comm,ierr)
-    call MPI_Bcast(maxvort,1,MPI_REAL,0,comm,ierr)
-    call MPI_Bcast(r0,1,MPI_REAL,0,comm,ierr)
-    call MPI_Bcast(vortcoeff,1,MPI_REAL,0,comm,ierr)
-    call MPI_Bcast(device,1,MPI_LOGICAL,0,comm,ierr)
+    ! Anything read in from the configuration file needs 
+    ! to be broadcast to all the other processes.
+
+    ! Broadcast shape parameters to all other processes
+    call MPI_Bcast(shape,1,MPI_INTEGER,0,comm,ierr)
+    call MPI_Bcast(alpha,1,MPI_REAL,0,comm,ierr)
+    call MPI_Bcast(m,1,MPI_REAL,0,comm,ierr)
+    call MPI_Bcast(t,1,MPI_REAL,0,comm,ierr)
     call MPI_Bcast(nx_global,1,MPI_INTEGER,0,comm,ierr)
     call MPI_Bcast(ny_global,1,MPI_INTEGER,0,comm,ierr)
+
+    ! Broadcastvorticity parameters to allother processes
+    call MPI_Bcast(vorticity,1,MPI_LOGICAL,0,comm,ierr)
+    !call MPI_Bcast(vortcoeff,1,MPI_REAL,0,comm,ierr)
+    !call MPI_Bcast(maxvort,1,MPI_REAL,0,comm,ierr)
+    !call MPI_Bcast(r0,1,MPI_REAL,0,comm,ierr)
+
+    ! Broadcast GPU params to all other processes
+    call MPI_Bcast(device,1,MPI_LOGICAL,0,comm,ierr)
+
     
 
 
