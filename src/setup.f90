@@ -28,7 +28,7 @@ subroutine setup()
             
         endif 
         
-        print *, "mesh size: (",nx_global,ny_global,")"
+        print *, "mesh size: (",nx_global,",",ny_global,")"
 
     endif 
 

@@ -158,19 +158,19 @@ subroutine writetofile(fname)
 
 
         print*,"-------------------------------------------------------------------------------"
-        print *, "pressure lift=", plift
-        print *, "ram lift     =", ramlift
+        print *, "pressure lift   =", plift
+        print *, "ram lift        =", ramlift
         print *,''
-        print *, "pressure drag=", pdrag
-        print *, "ram drag     =", ram
+        print *, "pressure drag   =", pdrag
+        print *, "ram drag        =", ram
         print*, ''
         print*," ------------------------------------"
-        print *, "|Total lift   =", lift, "N/m |"
-        print* , "|Total drag   =", drag, "N/m |"
+        print *, "|Total lift     =", lift, "N/m |"
+        print* , "|Total drag     =", drag, "N/m |"
         print *, ' ----------------------------------'
-        print *, "Lift Coefficient=",c_lift
-        print *, "Drag Coefficient=",c_drag
-        print *, "Lift to drag    =",lift/drag
+        print *, "Lift Coefficient =",c_lift
+        print *, "Drag Coefficient =",c_drag
+        print *, "Lift to drag     =",lift/drag
         print *, ''
 
 
