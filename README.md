@@ -2,7 +2,7 @@
 A toy model that solves the [Navier Stokes equations](https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations) for the flow of a wing around a wind.
 ## Compiling
 These instructions have been tested on with:
-- cmake/3.25.2
+- cmake/3.25.2 and 4.1.2
 - nvhpc/22.2
 The nvhpc suite provides the fortran openmpi cuda aware implementation.
 
@@ -10,11 +10,13 @@ You will need a `Fortran` compiler and `CMake` installed. You will also need an 
 ```bash
 mkdir build
 cd build
-FC=mpif90 cmake ../
+FC=mpif90 cmake ../ -DUSE_CUDA=OFF
+make
 ```
 If building with GPU support, then you should define the USE_CUDA variable: 
 ```bash
 FC=mpif90 cmake ../ -DUSE_CUDA=ON
+make
 ```
 
 
