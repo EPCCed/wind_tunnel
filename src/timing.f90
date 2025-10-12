@@ -74,9 +74,14 @@ module timings_mod
         class(timings) :: this
         integer,intent(in) :: unit
         integer:: rank=0,i=0,idx=0
+
+        ! Collect times from all ranks
         call this%gather_times()
 
+        ! Process 0 writes out the times
         if (this%rank == 0) then
+            print *, "Timing results (seconds):"
+            print *, "Timer #, Rank, Name, Time"
             do rank=1,this%nRanks
                 do i=1,size(this%timers)
                     idx=idx+1
